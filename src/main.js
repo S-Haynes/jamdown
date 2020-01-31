@@ -1,12 +1,28 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import VueRouter from 'vue-router'
+import App from './App.vue'
+import router from './routes'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUserSecret, faPlay, faPause, faFastBackward, faFastForward } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-Vue.config.productionTip = false;
+library.add(faUserSecret)
+library.add(faPlay)
+library.add(faPause)
+library.add(faFastBackward)
+library.add(faFastForward)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+import { store } from './store/store'
+
+Vue.use(VueRouter)
+Vue.use(Vuex)
 
 new Vue({
+  el: '#app',
   router,
   store,
   render: h => h(App)
-}).$mount("#app");
+})
