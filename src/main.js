@@ -3,22 +3,12 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import App from './App.vue'
 import router from './routes'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserSecret, faPlay, faPause, faFastBackward, faFastForward } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faUserSecret)
-library.add(faPlay)
-library.add(faPause)
-library.add(faFastBackward)
-library.add(faFastForward)
-
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-
+import fontAwesomeConfig from './config/fontawesome'
 import { store } from './store/store'
 
 Vue.use(VueRouter)
 Vue.use(Vuex)
+fontAwesomeConfig();
 
 new Vue({
   el: '#app',

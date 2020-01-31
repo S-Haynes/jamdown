@@ -44,7 +44,9 @@ const getters = {
 
 const mutations = {
   SET_SONGLIST (state, payload) {
-    state.songList = payload;
+    if(state.songList.length === 0){
+      state.songList = payload;
+    }
   },
   SET_MUSIC_DATA (state, payload) {
     state.musicData = payload;

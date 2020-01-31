@@ -151,5 +151,11 @@ export default {
         overflow: hidden;
       }
     }
+
+    .controller-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 </style>

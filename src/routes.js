@@ -6,15 +6,24 @@ import Discover from './pages/Discover.vue'
 const routes = [
   {
     path: '/', 
-    component: Home
+    component: () =>
+    import(/* webpackChunkName: "home" */ "./pages/Home.vue")
   },
   {
     path: '/music', 
-    component: Music,
+    component: () =>
+    import(/* webpackChunkName: "music" */ "./pages/Music.vue"),
     children: [
       {
         path: 'discover',
-        component: Discover
+        component: () =>
+        import(/* webpackChunkName: "discover" */ "./pages/Discover.vue")
+      },
+      {
+        path: 'search'
+      },
+      {
+        path: 'hot'
       }
     ]
   },

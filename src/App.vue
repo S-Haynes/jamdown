@@ -31,4 +31,8 @@ export default {
  img {
    max-width: 100%;
  }
+
+ div, p {
+   width: 100%;
+ }
 </style>
