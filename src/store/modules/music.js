@@ -1,4 +1,4 @@
-import { GET_MUSIC_DISCOVER, SET_MUSIC, SET_SONGLIST, SET_MUSIC_DATA, SET_SONG_DURATION, SET_SONG_PLAYING, SET_SONG_PAUSED, SET_NEW_SONG_PLAYING, PLAY_NEXT_SONG, UPDATE_SONG_TIMER, PAUSE_SONG, PLAY_PREVIOUS_SONG, SET_MAX_DURATION, SET_SONG } from "../types"
+import { SET_SONGLIST, SET_MUSIC_DATA, SET_SONG_DURATION, SET_SONG_PLAYING, SET_SONG_PAUSED, SET_NEW_SONG_PLAYING, PLAY_NEXT_SONG, UPDATE_SONG_TIMER, PLAY_PREVIOUS_SONG, SET_MAX_DURATION, SET_SONG } from "../types"
 import axios from 'axios'
 
 const state = {
@@ -134,7 +134,7 @@ const mutations = {
       if(state.songList[parseInt(state.currentSongIndex) - 1].readyState !== 4){
         return
       }
-      
+
       state.songList[state.currentSongIndex].pause();
       state.songList[state.currentSongIndex].currentTime = 0;
       state.songDuration = (state.songList[parseInt(state.currentSongIndex) - 1].duration * 1000) - (state.songList[parseInt(state.currentSongIndex) - 1].currentTime * 1000)
