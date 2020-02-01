@@ -33,7 +33,7 @@ data() {
       },
       {
         to: '/music/hot',
-        name: 'HOT',
+        name: 'Hot',
         icon: ['fab', 'hotjar']
       }
     ]
@@ -54,6 +54,7 @@ data() {
     width: 250px;
     background: #111;
     padding: 10px;
+    // z-index: 99;
   }
 
   .sidebar-content {
@@ -66,36 +67,50 @@ data() {
     &-links {
       display: flex;
       flex-direction: column;
-      width: 100%;
     }
 
     &-link {
       display: flex;
       align-items: center;
       text-decoration: none;
-      color: $pink;
+      color: #fff;
       transition: color 0.3s ease-in-out;
-      font-family: $sans;
-      font-weight: $bold;
+      font-family: $main-font;
+      font-weight: $normal;
       font-size: 15px;
-      padding: 10px;
+      padding: 10px 10px 10px 25px;
       border-radius: 4px;
 
       &:hover {
-        color: lighten($purple, 8%)
+        color: $pink;
+
+        .sidebar-content-link-icon {
+          // color: lighten($purple, 8%);
+          color: $pink;
+        }
       }
 
       &.-active {
         // color: $purple
         background-color: $dark-gray;
-        color: lighten($purple, 8%);
+        // color: lighten($purple, 8%);
+        color: $pink;
+        transition: color 0s;
+
+        .sidebar-content-link-icon {
+          // color: lighten($purple, 8%);
+          color: $pink;
+        }
       }
 
       &-icon {
+        width: 25px;
+        height: 25px;
         position: relative;
-        left: 5px;
         margin-right: 25px;
         font-size: 25px;
+        color: rgba($dark-gray, 0.8);
+        transition: color 0.3s ease-in-out;
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-    <MusicList name="Discover Playlist"/>
+    <MusicList name="Hot Playlist"/>
 </template>
 
 <script>
@@ -10,10 +10,10 @@ export default {
     MusicList
   },
   methods: {
-    ...mapActions(["GET_MUSIC_DISCOVER"])
+    ...mapActions(["GET_MUSIC_HOT"])
   }, 
   created() {
-    this.GET_MUSIC_DISCOVER();
+    this.GET_MUSIC_HOT();
   }
 }
 </script>

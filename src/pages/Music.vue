@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="music-page-container">
     <Sidebar />
     <router-view></router-view>
     <Controller />
@@ -18,5 +18,7 @@ export default {
 </script>
 
 <style>
-
+  .music-page-container {
+    height: 100%;
+  }
 </style>

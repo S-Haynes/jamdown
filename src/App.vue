@@ -19,7 +19,14 @@ export default {
    font-family: $main-font;
  }
 
+#app {
+  width: 100%;
+  height: 100%;
+}
+
  body, html {
+   width: 100%;
+   height: 100%;
    padding-bottom: 50px;
    overflow-y: hidden;
  }
@@ -35,4 +42,24 @@ export default {
  div, p {
    width: 100%;
  }
+
+   /* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: darken($light-gray, 10%);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 </style>

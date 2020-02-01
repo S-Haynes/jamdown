@@ -1,12 +1,21 @@
 <template>
   <div class="jamdown-controller">
+    <div class="current-track">
+      <div v-if="Object.keys(song).length > 0" class="current-track-image">
+        <img :src="song.album_image" alt="poster">
+      </div>
+     <div v-if="Object.keys(song).length > 0" class="current-track-text">
+        <div class="current-track-track">{{song.track_name}}</div>
+        <div class="current-track-artist">{{song.artist_name}}</div>
+      </div>
+    </div>
     <div class="controller -middle">
       <div class="controller-buttons">
         <button class="-step-btn" @click.prevent="PLAY_PREVIOUS_SONG"><font-awesome-icon icon="fast-backward"/></button>
         <button v-if="playing" @click.prevent="PAUSE_SONG(getSongIndex)" class="-pause">
           <font-awesome-icon icon="pause"/>
         </button>
-        <button v-else @click.prevent="PLAY_SONG(getSongIndex)" class="-play"> 
+        <button v-else @click.prevent="PLAY_SONG_CONTROLLER(getSongIndex)" class="-play"> 
           <font-awesome-icon icon="play"/>
         </button>
         <button class="-step-btn" @click.prevent="PLAY_NEXT_SONG"><font-awesome-icon icon="fast-forward"/></button>
@@ -16,7 +25,7 @@
         <span class="controller-progress-bar-start" v-if="getDuration">{{getDuration}}</span>
         <span class="controller-progress-bar-start" v-else>0:00</span>
         <button class="progress-bar">
-          <div :style="{width: currentTime + '%', height: '4px', backgroundColor: 'lightpink', position: 'absolute', top: '0', left: '0'}"></div>
+          <div class="progress-bar-line" :style="{width: currentTime + '%', height: '4px', backgroundColor: 'lightpink', position: 'absolute', top: '0', left: '0'}"></div>
         </button>
         <span class="controller-progress-bar-end" v-if="getMaxDuration">{{getMaxDuration}}</span>
         <span class="controller-progress-bar-end" v-else>0:00</span>
@@ -29,6 +38,9 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
   computed: {
+    song() {
+      return this.songData();
+    },
     playing() {
       return this.currentlyPlaying();
     },
@@ -63,8 +75,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["PLAY_SONG", "PAUSE_SONG", "PLAY_NEXT_SONG", "PLAY_PREVIOUS_SONG"]),
-    ...mapGetters(["currentlyPlaying", "songIndex", "trackDuration", "maxDuration", "currentTimestamp"])
+    ...mapActions(["PLAY_SONG_CONTROLLER", "PAUSE_SONG", "PLAY_NEXT_SONG", "PLAY_PREVIOUS_SONG"]),
+    ...mapGetters(["currentlyPlaying", "songIndex", "trackDuration", "maxDuration", "currentTimestamp", 'songData'])
   }
 }
 </script>
@@ -73,12 +85,14 @@ export default {
   .jamdown-controller {
     position: fixed;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     bottom: 0;
     height: 100px;
     width: 100%;
-    background: #333;
+    background: #111;
     padding: 20px;
+    box-shadow: -120px -50px 130px 130px rgba(0, 0, 0, 0.9);
 
     .-middle {
       display: flex;
@@ -150,12 +164,54 @@ export default {
         position: relative;
         overflow: hidden;
       }
+
+      .progress-bar-line {
+        width: 0;
+      }
     }
 
     .controller-buttons {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    .current-track {
+      position: relative;
+      top: -5px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      width: calc(100% / 3);
+
+      &-image {
+        width: 75px;
+        height: 75px;
+        margin-right: 20px;
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      &-text {
+        width: auto;
+      }
+
+      &-artist {
+        color: darken($gray, 20%);
+      }
+
+      &-track {
+        color: $pink;
+        margin-bottom: 10px;
+      }
+
+      &-spacer {
+        font-size: 16px;
+        margin: 0 5px;
+        color: darken($gray, 20%);
+      }
     }
   }
 </style>

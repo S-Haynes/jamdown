@@ -1,8 +1,9 @@
-import { SET_SONGLIST, SET_MUSIC_DATA, SET_SONG_DURATION, SET_SONG_PLAYING, SET_SONG_PAUSED, SET_NEW_SONG_PLAYING, PLAY_NEXT_SONG, UPDATE_SONG_TIMER, PLAY_PREVIOUS_SONG, SET_MAX_DURATION, SET_SONG } from "../types"
+import { SET_PAGE_QUEUE, SET_SONG_QUEUE, SET_MUSIC_DATA, SET_PAGE_MUSIC_DATA, SET_SONG_DURATION, SET_SONG_PLAYING, SET_SONG_PAUSED, SET_NEW_SONG_PLAYING, PLAY_NEXT_SONG, UPDATE_SONG_TIMER, PLAY_PREVIOUS_SONG, SET_MAX_DURATION, SET_SONG, SET_LOADING, SET_PAGE_TO_MUSIC_DATA } from "../types"
 import axios from 'axios'
 
 const state = {
   musicData: [],
+  pageMusicData: [],
   currentlyPlaying: false,
   currentSongIndex: null,
   songInterval: null,
@@ -10,9 +11,11 @@ const state = {
   durationInSecs: null,
   maxDuration: null,
   currentTimestamp: 0,
-  songList: [],
+  songQueue: [],
+  pageQueue: [],
   currentSongName: null,
-  song: {}
+  song: {},
+  loading: false
 }
 
 const getters = {
@@ -25,8 +28,11 @@ const getters = {
   musicData: state => {
     return state.musicData;
   },
-  songList: state => {
-    return state.songList;
+  pageMusicData: state => {
+    return state.pageMusicData;
+  },
+  songQueue: state => {
+    return state.songQueue;
   },
   currentlyPlaying: state => {
     return state.currentlyPlaying
@@ -39,79 +45,93 @@ const getters = {
   },
   currentTimestamp: state => {
     return state.currentTimestamp
+  },
+  loading: state => {
+    return state.loading
+  },
+  songData: state => {
+    return state.song
   }
 }
 
 const mutations = {
-  SET_SONGLIST (state, payload) {
-    if(state.songList.length === 0){
-      state.songList = payload;
-    }
+  SET_LOADING (state, payload) {
+    state.loading = payload
+  },
+  SET_SONG_QUEUE (state, payload) {
+    state.songQueue = payload;
+  },
+  SET_PAGE_QUEUE (state, payload) {
+      state.pageQueue = payload;
   },
   SET_MUSIC_DATA (state, payload) {
     state.musicData = payload;
   },
+  SET_PAGE_MUSIC_DATA (state, payload) {
+    state.pageMusicData = payload;
+  },
   SET_SONG_DURATION (state, index) {
-    const songDuration = (parseInt(state.songList[index].duration) * 1000) - (parseInt(state.songList[index].currentTime) * 1000);
+    const songDuration = (parseInt(state.songQueue[index].duration) * 1000) - (parseInt(state.songQueue[index].currentTime) * 1000);
     state.songDuration = songDuration;
   },
   SET_MAX_DURATION (state, index) {
-    const maxDuration = (parseInt(state.songList[index].duration) * 1000)
+    const maxDuration = (parseInt(state.songQueue[index].duration) * 1000)
     state.maxDuration = maxDuration
   },
   SET_SONG_PLAYING (state, index) {
     state.currentlyPlaying = true;
-    state.songList[index].play();
+    state.songQueue[index].play();
     state.currentSongIndex = index;
-    state.currentSongName = state.songList[state.currentSongIndex].track_name
+    state.currentSongName = state.songQueue[state.currentSongIndex].track_name
     clearInterval(state.songInterval);
   },
   SET_SONG_PAUSED (state, index) {
     clearInterval(state.songInterval);
     state.songInterval = null;
-    state.songList[index].pause();
+    state.songQueue[index].pause();
     state.currentlyPlaying = false;
   },
   SET_NEW_SONG_PLAYING (state, index) {
-    state.songList[state.currentSongIndex].pause();
-    state.songList[state.currentSongIndex].currentTime = 0;
+    state.songQueue[state.currentSongIndex].pause();
+    state.songQueue[state.currentSongIndex].currentTime = 0;
     clearInterval(state.songInterval);
     state.currentSongIndex = index;
     state.currentTimestamp = 0;
-    state.currentSongName = state.songList[state.currentSongIndex].track_name
-    state.songDuration = state.songList[index].duration * 1000;
-    state.songList[index].play();
+    state.currentSongName = state.songQueue[state.currentSongIndex].track_name
+    state.songDuration = state.songQueue[index].duration * 1000;
+    state.songQueue[index].play();
+    state.currentlyPlaying = true;
   },
   PLAY_NEXT_SONG (state) {
 
-    if(parseInt(state.currentSongIndex) >= parseInt(state.songList.length) - 1) {
+    if(parseInt(state.currentSongIndex) >= parseInt(state.songQueue.length) - 1) {
 
-      if(state.songList[0].readyState !== 4){
+      if(state.songQueue[0].readyState !== 4){
         return
       }
 
-      state.songList[state.currentSongIndex].pause();
-      state.songList[state.currentSongIndex].currentTime = 0;
+      state.songQueue[state.currentSongIndex].pause();
+      state.songQueue[state.currentSongIndex].currentTime = 0;
       state.currentSongIndex = 0;
-      state.songDuration = (state.songList[parseInt(state.currentSongIndex)].duration * 1000) - (state.songList[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
-      state.maxDuration = state.songList[parseInt(state.currentSongIndex)].duration * 1000
+      state.songDuration = (state.songQueue[parseInt(state.currentSongIndex)].duration * 1000) - (state.songQueue[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
+      state.maxDuration = state.songQueue[parseInt(state.currentSongIndex)].duration * 1000
       state.currentTimestamp = 0;
-      state.songList[parseInt(state.currentSongIndex)].play();
-      state.currentSongName = state.songList[parseInt(state.currentSongIndex)].track_name;
+      state.songQueue[parseInt(state.currentSongIndex)].play();
+      state.currentSongName = state.songQueue[parseInt(state.currentSongIndex)].track_name;
       state.currentlyPlaying = true;
     } else {
-      if(state.songList[parseInt(state.currentSongIndex) + 1].readyState !== 4){
+      if(state.songQueue[parseInt(state.currentSongIndex) + 1].readyState !== 4){
         return
       }
       
-      state.songList[state.currentSongIndex].pause();
-      state.songList[state.currentSongIndex].currentTime = 0;
-      state.songDuration = (state.songList[parseInt(state.currentSongIndex) + 1].duration * 1000) - (state.songList[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
+      state.songQueue[state.currentSongIndex].pause();
+      state.songQueue[state.currentSongIndex].currentTime = 0;
+      state.songDuration = (state.songQueue[parseInt(state.currentSongIndex) + 1].duration * 1000) - (state.songQueue[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
       state.currentTimestamp = 0;
-      state.maxDuration = state.songList[parseInt(state.currentSongIndex) + 1].duration * 1000
-      state.songList[parseInt(state.currentSongIndex) + 1].play();
+      state.maxDuration = state.songQueue[parseInt(state.currentSongIndex) + 1].duration * 1000
+      state.songQueue[parseInt(state.currentSongIndex) + 1].play();
       state.currentSongIndex = parseInt(state.currentSongIndex) + 1;
-      state.currentSongName = state.songList[parseInt(state.currentSongIndex)].track_name;
+      state.currentSongName = state.songQueue[parseInt(state.currentSongIndex)].track_name;
       state.currentlyPlaying = true;
     }
   },
@@ -119,31 +139,31 @@ const mutations = {
 
     if(parseInt(state.currentSongIndex) <= 0) {
 
-      if(state.songList[0].readyState !== 4){
+      if(state.songQueue[0].readyState !== 4){
         return
       }
 
-      state.songList[state.currentSongIndex].pause();
-      state.songList[state.currentSongIndex].currentTime = 0;
+      state.songQueue[state.currentSongIndex].pause();
+      state.songQueue[state.currentSongIndex].currentTime = 0;
       state.currentSongIndex = 0
-      state.songDuration = (state.songList[parseInt(state.currentSongIndex)].duration * 1000) - (state.songList[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
+      state.songDuration = (state.songQueue[parseInt(state.currentSongIndex)].duration * 1000) - (state.songQueue[parseInt(state.currentSongIndex) + 1].currentTime * 1000)
       state.currentTimestamp = 0;
-      state.songList[parseInt(state.currentSongIndex)].play();
-      state.currentSongName = state.songList[parseInt(state.currentSongIndex)].track_name;
+      state.songQueue[parseInt(state.currentSongIndex)].play();
+      state.currentSongName = state.songQueue[parseInt(state.currentSongIndex)].track_name;
       state.currentlyPlaying = true;
     } else {
 
-      if(state.songList[parseInt(state.currentSongIndex) - 1].readyState !== 4){
+      if(state.songQueue[parseInt(state.currentSongIndex) - 1].readyState !== 4){
         return
       }
 
-      state.songList[state.currentSongIndex].pause();
-      state.songList[state.currentSongIndex].currentTime = 0;
-      state.songDuration = (state.songList[parseInt(state.currentSongIndex) - 1].duration * 1000) - (state.songList[parseInt(state.currentSongIndex) - 1].currentTime * 1000)
+      state.songQueue[state.currentSongIndex].pause();
+      state.songQueue[state.currentSongIndex].currentTime = 0;
+      state.songDuration = (state.songQueue[parseInt(state.currentSongIndex) - 1].duration * 1000) - (state.songQueue[parseInt(state.currentSongIndex) - 1].currentTime * 1000)
       state.currentTimestamp = 0;
-      state.songList[parseInt(state.currentSongIndex) - 1].play();
+      state.songQueue[parseInt(state.currentSongIndex) - 1].play();
       state.currentSongIndex = parseInt(state.currentSongIndex) - 1;
-      state.currentSongName = state.songList[parseInt(state.currentSongIndex)].track_name;
+      state.currentSongName = state.songQueue[parseInt(state.currentSongIndex)].track_name;
       state.currentlyPlaying = true;
     }
   },
@@ -170,15 +190,18 @@ const mutations = {
   },
   SET_SONG: (state, index) => {
     state.song = state.musicData[index];
+  },
+  SET_PAGE_TO_MUSIC_DATA: (state, payload) => {
+    state.musicData = payload;
   }
-
 }
 
 const actions = {
   GET_MUSIC_DISCOVER ({commit}) {
+    commit(SET_LOADING, true)
     axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&limit=30&include=musicinfo&groupby=artist_id`)
     .then(res => {
-      let songList = [];
+      let songQueue = [];
       let modifiedData = res.data.results.map(result => {
 
         const audio = new Audio(result.audio);
@@ -194,7 +217,7 @@ const actions = {
             commit(SET_SONG, state.currentSongIndex)
           }
         })
-        songList.push(audio);
+        songQueue.push(audio);
         return { 
           id: result.id,
           track_name: result.name,
@@ -207,13 +230,63 @@ const actions = {
           audio: result.audio
         }
       })
-      commit(SET_MUSIC_DATA, modifiedData);
-      commit(SET_SONGLIST, songList)
+      commit(SET_PAGE_MUSIC_DATA, modifiedData);
+      commit(SET_PAGE_QUEUE, songQueue);
+      commit(SET_LOADING, false)
+    })
+  },
+  GET_MUSIC_HOT ({commit}) {
+    commit(SET_LOADING, true)
+    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&fuzzytags=hiphop&limit=30&include=musicinfo&groupby=artist_id`)
+    .then(res => {
+      let songQueue = [];
+      let modifiedData = res.data.results.map(result => {
+
+        const audio = new Audio(result.audio);
+        audio.track_name = result.name;
+        audio.artist_name = result.artist_name;
+        audio.album_name = result.album_name;
+        audio.album_id = result.album_id;
+        audio.album_image = result.album_image;
+
+        audio.addEventListener('ended', () => {
+          if(state.currentlyPlaying) {
+            commit(PLAY_NEXT_SONG)
+            commit(SET_SONG, state.currentSongIndex)
+          }
+        })
+        songQueue.push(audio);
+        return { 
+          id: result.id,
+          track_name: result.name,
+          duration: result.duration,
+          artist_name: result.artist_name,
+          album_name: result.album_name,
+          album_id: result.album_id,
+          album_image: result.album_image,
+          track_image: result.track_image,
+          audio: result.audio
+        }
+      })
+      commit(SET_PAGE_MUSIC_DATA, modifiedData);
+      commit(SET_PAGE_QUEUE, songQueue);
+      commit(SET_LOADING, false)
     })
   },
   PLAY_SONG ({commit}, index) {
+    commit(SET_PAGE_TO_MUSIC_DATA, state.pageMusicData);
+    if(state.currentlyPlaying){
+      clearInterval(state.songInterval);
+      state.songInterval = null;
+      state.songQueue[state.currentSongIndex].pause();
+      commit(SET_SONG_QUEUE, []);
+      commit(SET_SONG_QUEUE, state.pageQueue);
+    } else {
+      commit(SET_SONG_QUEUE, []);
+      commit(SET_SONG_QUEUE, state.pageQueue);
+    }
 
-    if(state.songList[index].readyState !== 4 || state.songList.length === 0) {
+    if(state.songQueue[index].readyState !== 4 || state.songQueue.length === 0) {
       return;
     }
 
@@ -223,6 +296,46 @@ const actions = {
       commit(SET_SONG_PLAYING, index)
       commit(SET_SONG_DURATION, index)
       commit(UPDATE_SONG_TIMER)
+      console.log('wasnt playing')
+
+    } else if (state.currentlyPlaying && (parseInt(index) === parseInt(state.currentSongIndex)) && state.songQueue[state.currentSongIndex].currentTime !== 0) {
+
+      commit(SET_SONG, index)
+      commit(SET_MAX_DURATION, index)  
+      commit(SET_SONG_DURATION, index)
+      commit(SET_SONG_PAUSED, index)
+      console.log('paused')
+
+    } else if(state.currentlyPlaying && (parseInt(index) === parseInt(state.currentSongIndex)) && state.songQueue[state.currentSongIndex].currentTime === 0) {
+      commit(SET_SONG, index)
+      commit(SET_MAX_DURATION, index)
+      commit(SET_SONG_DURATION, index)
+      commit(SET_NEW_SONG_PLAYING, index)
+      commit(UPDATE_SONG_TIMER)
+      console.log('new song')
+    } else if (state.currentlyPlaying && (parseInt(index) !== parseInt(state.currentSongIndex))) {
+
+      commit(SET_SONG, index)
+      commit(SET_MAX_DURATION, index)
+      commit(SET_SONG_DURATION, index)
+      commit(SET_NEW_SONG_PLAYING, index)
+      commit(UPDATE_SONG_TIMER)
+      console.log('new song')
+    }
+  },
+  PLAY_SONG_CONTROLLER ({commit}, index) {
+
+    if(state.songQueue[index].readyState !== 4 || state.songQueue.length === 0) {
+      return;
+    }
+
+    if(!state.currentlyPlaying){
+      commit(SET_SONG, index)
+      commit(SET_MAX_DURATION, index)
+      commit(SET_SONG_PLAYING, index)
+      commit(SET_SONG_DURATION, index)
+      commit(UPDATE_SONG_TIMER)
+
 
     } else if (state.currentlyPlaying && (parseInt(index) === parseInt(state.currentSongIndex))) {
 
@@ -239,6 +352,7 @@ const actions = {
       commit(SET_SONG_DURATION, index)
       commit(SET_NEW_SONG_PLAYING, index)
       commit(UPDATE_SONG_TIMER)
+
     }
   },
   PAUSE_SONG ({commit}, index) {

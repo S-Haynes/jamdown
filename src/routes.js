@@ -17,13 +17,18 @@ const routes = [
       {
         path: 'discover',
         component: () =>
-        import(/* webpackChunkName: "discover" */ "./pages/Discover.vue")
+        import(/* webpackChunkName: "discover" */ "./pages/Discover.vue"),
+        props: {
+          name: 'Discover'
+        }
       },
       {
         path: 'search'
       },
       {
-        path: 'hot'
+        path: 'hot',
+        component: () =>
+        import(/* webpackChunkName: "hot" */ "./pages/Hot.vue"),
       }
     ]
   },
