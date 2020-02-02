@@ -6,8 +6,8 @@
     </div>
     <div class="wrapper" v-else >
     <div class="playlist-info">
-      <div class="playlist-info-image">
-        <img :src="posterTrack.album_image" alt="poster">
+      <div class="playlist-info-image" ref="playlistImage" :style="{height: innerWidth > 1300 ? '300px' : auto}">
+        <progressive-img :src="posterTrack.album_image" :placeholder="temp_image" :blur="5" fallback="../../../assets/temp_music.jpg" @onLoad="onLoad"/>
       </div>
       <div class="playlist-info-title">
         <h2>{{name}}</h2>
@@ -32,7 +32,9 @@
 
 <script>
 import {mapActions, mapGetters } from 'vuex'
+
 export default {
+
   props: ["name"],
   computed: {
     getMusic () {
@@ -49,12 +51,23 @@ export default {
     },
     queue() {
       return this.songQueue();
+    },
+    innerWidth() {
+      return window.innerWidth;
     }
     
   },
   methods: {
       ...mapActions(['PLAY_SONG']),
       ...mapGetters(['pageMusicData', 'loading', 'songIndex', 'songQueue']),
+      onLoad () {
+        this.$refs.playlistImage.style.height = 'auto';
+      }
+  },
+  data() {
+    return {
+      temp_image: require('@/assets/temp_music.jpg')
+    }
   }
 }
 
@@ -66,7 +79,7 @@ export default {
   padding-top: 100px;
   padding-left: 300px;
   height: 100% !important;
-  background: linear-gradient(to bottom, darken(#696970, 20%) 10%, #111 70%);
+  background: linear-gradient(to bottom, darken(#696970, 25%) 10%, #111 70%);
 }
 
 .wrapper {
@@ -88,10 +101,13 @@ export default {
   &-image {
     margin-bottom: 20px;
     max-width: 300px;
+    max-height: 300px;
+    width: 100%;
 
     img {
       display: block;
       width: 100%;
+      height: 100%;
     }
   }
 

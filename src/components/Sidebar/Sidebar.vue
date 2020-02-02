@@ -52,9 +52,9 @@ data() {
     height: calc(100% - 100px);
     margin-right: 100px;
     width: 250px;
-    background: #111;
+    background: #000;
     padding: 10px;
-    // z-index: 99;
+    z-index: 99;
   }
 
   .sidebar-content {
@@ -92,7 +92,7 @@ data() {
 
       &.-active {
         // color: $purple
-        background-color: $dark-gray;
+        background-color: darken($dark-gray, 10%);
         // color: lighten($purple, 8%);
         color: $pink;
         transition: color 0s;
@@ -109,7 +109,8 @@ data() {
         position: relative;
         margin-right: 25px;
         font-size: 25px;
-        color: rgba($dark-gray, 0.8);
+        // color: rgba($dark-gray, 0.8);
+        color: rgba(#333, 0.3);
         transition: color 0.3s ease-in-out;
       }
     }

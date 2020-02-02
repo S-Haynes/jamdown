@@ -90,7 +90,7 @@ export default {
     bottom: 0;
     height: 100px;
     width: 100%;
-    background: #111;
+    background: rgb(23, 23, 23);
     padding: 20px;
     box-shadow: -120px -50px 130px 130px rgba(0, 0, 0, 0.9);
 

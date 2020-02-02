@@ -199,7 +199,7 @@ const mutations = {
 const actions = {
   GET_MUSIC_DISCOVER ({commit}) {
     commit(SET_LOADING, true)
-    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&limit=30&include=musicinfo&groupby=artist_id`)
+    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&limit=30&include=musicinfo&groupby=artist_id&imagesize=300`)
     .then(res => {
       let songQueue = [];
       let modifiedData = res.data.results.map(result => {
@@ -237,7 +237,7 @@ const actions = {
   },
   GET_MUSIC_HOT ({commit}) {
     commit(SET_LOADING, true)
-    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&fuzzytags=hiphop&limit=30&include=musicinfo&groupby=artist_id`)
+    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&fuzzytags=hiphop&limit=30&include=musicinfo&groupby=artist_id&imagesize=300`)
     .then(res => {
       let songQueue = [];
       let modifiedData = res.data.results.map(result => {

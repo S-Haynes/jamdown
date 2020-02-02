@@ -5,7 +5,11 @@ import App from './App.vue'
 import router from './routes'
 import fontAwesomeConfig from './config/fontawesome'
 import { store } from './store/store'
+import VueProgressiveImage from 'vue-progressive-image'
 
+Vue.use(VueProgressiveImage, {
+  delay: 500
+})
 Vue.use(VueRouter)
 Vue.use(Vuex)
 fontAwesomeConfig();
