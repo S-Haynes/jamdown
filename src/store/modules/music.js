@@ -9,8 +9,7 @@ const state = {
   currentlyPlaying: false,
   loading: false,
   song: {},
-  audio: new Audio,
-  loading: false
+  audio: new Audio
 }
 
 const getters = {
