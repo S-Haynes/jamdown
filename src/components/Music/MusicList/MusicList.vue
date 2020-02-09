@@ -79,14 +79,21 @@ export default {
 
 .music-container {
   padding-top: 100px;
-  padding-left: 300px;
+  padding-left: 250px;
   height: 100% !important;
   background: linear-gradient(to bottom, darken(#696970, 25%) 10%, #111 70%);
+
+  @media (min-width: 1000px) {
+    padding-left: 300px;
+  }
 }
 
 .wrapper {
-  display: flex;
-  justify-content: space-between;
+
+  @media (min-width: 1000px) {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .loading-wrapper {
@@ -98,7 +105,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: calc(30% - 20px);
+  padding: 0 20px 40px;
+
+
+  @media (min-width: 1000px) {
+    width: calc(30% - 20px);
+    padding: 0;
+  }
 
   &-image {
     margin-bottom: 20px;
@@ -129,10 +142,13 @@ export default {
 ul {
   overflow: scroll;
   height: 1000px;
-  padding-bottom: 100px;
-  width: calc(70% - 40px);
-  padding-bottom: 500px;
-  padding-right: 50px;
+  padding: 0 20px 800px;
+
+  @media (min-width: 1000px) {
+    width: calc(70% - 40px);
+    padding: 0 50px 500px 0;
+  }
+
 }
 
 .track {

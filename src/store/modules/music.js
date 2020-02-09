@@ -1,4 +1,3 @@
-// import { SET_PAGE_QUEUE, SET_SONG_QUEUE, SET_MUSIC_DATA, SET_PAGE_MUSIC_DATA, SET_SONG_DURATION, SET_SONG_PAUSED, SET_NEW_SONG_PLAYING, PLAY_NEXT_SONG, UPDATE_SONG_TIMER, PLAY_PREVIOUS_SONG, SET_MAX_DURATION, SET_SONG, SET_LOADING, SET_PAGE_TO_MUSIC_DATA } from "../types"
 import { SET_LOADING, SET_PAGE_DATA, PLAY_SONG, SET_MUSIC_DATA, SET_AUDIO, SET_SONG, SET_CURRENTLY_PLAYING, PLAY, PAUSE } from '../types';
 import axios from 'axios'
 
@@ -9,7 +8,9 @@ const state = {
   currentlyPlaying: false,
   loading: false,
   song: {},
-  audio: new Audio
+  audio: new Audio,
+  currentTime: null,
+  maxTime: null
 }
 
 const getters = {
@@ -27,6 +28,15 @@ const getters = {
   },
   compareMusicList: (state) => {
     return state.musicData[0].id === state.pageMusicData[0].id
+  },
+  audio: (state) => {
+    return state.audio
+  },
+  currentTime: (state) => {
+    return state.currentTime
+  },
+  maxTime: (state) => {
+    return state.maxTime
   }
 }
 
@@ -44,38 +54,45 @@ const mutations = {
     state.song = payload;
     state.audio.src = payload.audio;
     state.audio.play();
-  },
-  SET_NEXT_AUDIO: (state, payload) => {
-    state.audio.src = payload.audio;
-    state.audio.play();
+
+    state.audio.addEventListener('ended', () => {
+      const currentSongIndex = state.musicData.findIndex(song => song.id === state.song.id)
+      let nextSong = null;
+
+      if(currentSongIndex === state.musicData.length - 1) {
+        nextSong = state.musicData[0];
+      } else {
+        nextSong = state.musicData[currentSongIndex + 1];
+      }
+
+      state.song = nextSong;
+      state.audio.src = nextSong.audio;
+      state.audio.play();
+      state.currentlyPlaying = true;
+    })
+
+    state.audio.addEventListener('timeupdate', () => {
+      const time = state.audio.currentTime;
+      state.currentTime = time;
+      state.maxTime = state.audio.duration;
+    })
   },
   SET_CURRENTLY_PLAYING: (state, payload) => {
     state.currentlyPlaying = payload;
   },
   PAUSE: (state) => {
-    if(state.audio.src) {
-      state.audio.pause();
-      state.currentlyPlaying = false;
-    }
+    state.audio.pause();
   },
   PLAY: (state) => {
-    if(Object.keys(state.song).length > 0 && state.musicData[0].id === state.pageMusicData[0].id) {
-      state.audio.play();
-      state.currentlyPlaying = true;
-    } else {
-      state.musicData = state.pageMusicData;
-      state.song = state.musicData[0];
-      state.audio.src = state.musicData[0].audio
-      state.audio.play();
-      state.currentlyPlaying = true;
-    }
+    state.audio.play();
   }
 }
+
 
 const actions = {
   GET_MUSIC_DISCOVER ({commit}) {
     commit(SET_LOADING, true)
-    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&limit=30&include=musicinfo&groupby=artist_id&imagesize=300`)
+    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&limit=200&include=musicinfo&groupby=artist_id&imagesize=300`)
     .then(res => {
 
       let modifiedData = res.data.results.map(result => {
@@ -97,7 +114,7 @@ const actions = {
   },
   GET_MUSIC_HOT ({commit}) {
     commit(SET_LOADING, true)
-    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&fuzzytags=hiphop&limit=30&include=musicinfo&groupby=artist_id&imagesize=300`)
+    axios.get(`https://cors-anywhere.herokuapp.com/https://api.jamendo.com/v3.0/tracks/?client_id=${process.env.VUE_APP_JAMENDO}&format=jsonpretty&fuzzytags=hiphop&limit=200&include=musicinfo&groupby=artist_id&imagesize=300`)
     .then(res => {
       let modifiedData = res.data.results.map(result => {
 
@@ -125,21 +142,39 @@ const actions = {
   },
   PLAY_NEXT_SONG ({commit}) {
     const currentSongIndex = state.musicData.findIndex(song => song.id === state.song.id)
-    const nextSong = state.musicData[currentSongIndex + 1];
+    let nextSong = null;
+    if(currentSongIndex === state.musicData.length - 1) {
+      nextSong = state.musicData[0];
+    } else {
+      nextSong = state.musicData[currentSongIndex + 1];
+    }
     commit(SET_AUDIO, nextSong);
     commit(SET_CURRENTLY_PLAYING, true)
   },
   PLAY_PREVIOUS_SONG({commit}) {
     const currentSongIndex = state.musicData.findIndex(song => song.id === state.song.id)
-    const previousSong = state.musicData[currentSongIndex - 1];
+    let previousSong = null;
+    if(currentSongIndex === 0) {
+      previousSong = state.musicData[0];
+    } else {
+      previousSong = state.musicData[currentSongIndex - 1];
+    }
     commit(SET_AUDIO, previousSong);
     commit(SET_CURRENTLY_PLAYING, true)
   },
   PLAY_CURRENT_SONG({commit}) {
-    commit(PLAY);
+    if(Object.keys(state.song).length > 0 && state.musicData[0].id === state.pageMusicData[0].id) {
+      commit(PLAY);
+      commit(SET_CURRENTLY_PLAYING, true)
+    } else {
+      commit(SET_MUSIC_DATA, state.pageMusicData)
+      commit(SET_AUDIO, state.musicData[0])
+      commit(SET_CURRENTLY_PLAYING, true)
+    }
   },
   PAUSE_CURRENT_SONG({commit}) {
     commit(PAUSE);
+    commit(SET_CURRENTLY_PLAYING, false)
   }
 }
 

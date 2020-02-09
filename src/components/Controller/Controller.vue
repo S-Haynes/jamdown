@@ -2,11 +2,11 @@
   <div class="jamdown-controller">
     <div class="current-track">
       <div class="current-track-image">
-        <!-- <img :src="song.album_image" alt="poster"> -->
+        <img :src="songData.album_image">
       </div>
      <div class="current-track-text">
-        <div class="current-track-track"></div>
-        <div class="current-track-artist"></div>
+        <div class="current-track-track">{{songData.track_name}}</div>
+        <div class="current-track-artist">{{songData.artist_name}}</div>
       </div>
     </div>
     <div class="controller -middle">
@@ -22,13 +22,13 @@
       </div>
       <div class="controller-progress-bar">
         
-        <span class="controller-progress-bar-start"></span>
-        <span class="controller-progress-bar-start">0:00</span>
+        <span class="controller-progress-bar-start" v-if="currentTimestamp" >{{currentTimestamp | minutes }}</span>
+        <span class="controller-progress-bar-start" v-else>0:00</span>
         <button class="progress-bar">
-          <div class="progress-bar-line"></div>
+          <div class="progress-bar-line" :style="{width: currentTimestamp ? progressWidth + '%' : '0%', position: 'absolute', top: '0', left: '0'}"></div>
         </button>
-        <span class="controller-progress-bar-end"></span>
-        <span class="controller-progress-bar-end">0:00</span>
+        <span class="controller-progress-bar-end" v-if="Object.keys(songData).length">{{songData.duration | minutes}}</span>
+        <span class="controller-progress-bar-end" v-else>0:00</span>
       </div>
     </div>
   </div>
@@ -37,46 +37,60 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
+  data() {
+    return {
+      currentTimestamp: null
+    }
+  },
   computed: {
-  //   song() {
-  //     return this.songData();
-  //   },
     playing() {
       return this.currentlyPlaying();
     },
-  //   getSongIndex() {
-  //     if(this.songIndex() === null) {
-  //       return "0"
-  //     } else {
-  //       return this.songIndex()
-  //     }
-  //   },
-  //   getDuration() {
-  //     return this.trackDuration();
-  //   },
-  //   getMaxDuration() {
-  //     let convertedTime = Math.floor(this.maxDuration() / 1000);
-  //     let minutes = Math.floor(convertedTime / 60);
-  //     let seconds = convertedTime % 60;
-  //     if(seconds < 10 && seconds >= 1){
-  //       seconds = "0" + seconds
-  //     } else if(seconds <= 0) {
-  //       seconds = "00"
-  //     }
-
-  //     if(minutes <= 0) {
-  //       minutes = "0";
-  //     }
-
-  //     return minutes + ":" + seconds;
-  //   },
-  //   currentTime() {
-  //     return (this.currentTimestamp() / this.maxDuration()) * 100
-  //   }
+    duration() {
+      return this.audio().duration;
+    },
+    progressWidth() {
+      return (this.currentTimestamp / this.audioData.duration) * 100
+    },
+    audioData() {
+      return this.audio();
+    },
+    songData() {
+      return this.song();
+    },
+    getCurrentTime() {
+      return this.currentTime();
+    },
+    getMaxTime() {
+      return this.maxTime();
+    }
   },
   methods: {
     ...mapActions(["PLAY_NEXT_SONG", "PLAY_PREVIOUS_SONG", "PLAY_CURRENT_SONG", "PAUSE_CURRENT_SONG"]),
-    ...mapGetters(["currentlyPlaying"])
+    ...mapGetters(["currentlyPlaying", 'audio', 'song', 'currentTime', 'maxTime'])
+  },
+  watch: {
+    getCurrentTime: function (time) {
+     this.currentTimestamp = time;
+    }
+  },
+  filters: {
+    minutes: function(time) {
+      let convertedTime = Math.floor(time);
+      let minutes = Math.floor(convertedTime / 60);
+      let seconds = convertedTime % 60;
+      if(seconds < 10 && seconds >= 1){
+        seconds = "0" + seconds
+      } else if(seconds <= 0) {
+        seconds = "00"
+      }
+
+      if(minutes <= 0) {
+        minutes = "0";
+      }
+
+      return minutes + ":" + seconds;
+    }
   }
 }
 </script>
@@ -98,7 +112,11 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: calc(100% / 3);
+      width: calc(50% - 20px);
+      @media (min-width: 1000px) {
+        width: calc(100% / 3);
+      }
+
     }
 
     button {
@@ -167,6 +185,8 @@ export default {
 
       .progress-bar-line {
         width: 0;
+        background-color: $pink;
+        height: 4px;
       }
     }
 
@@ -182,11 +202,23 @@ export default {
       display: flex;
       justify-content: flex-start;
       align-items: center;
-      width: calc(100% / 3);
+      width: calc(50% - 20px);
+      margin-right: 20px;
+      @media (min-width: 1000px) {
+        width: calc(100% / 3);
+        margin-right: 100px;
+      }
+
+      @media (min-width: 1300px) {
+        margin-right: 0px;
+      }
+
 
       &-image {
-        width: 75px;
-        height: 75px;
+        min-width: 75px;
+        min-height: 75px;
+        max-width: 75px;
+        max-height: 75px;
         margin-right: 20px;
         img {
           max-width: 100%;
