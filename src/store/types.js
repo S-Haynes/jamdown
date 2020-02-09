@@ -1,24 +1,12 @@
 export const GET_MUSIC_DISCOVER = "GET_MUSIC_DISCOVER";
-export const SET_MUSIC = "SET_MUSIC";
 
 export const SET_LOADING = "SET_LOADING";
-export const SET_SONG_QUEUE = "SET_SONG_QUEUE";
-export const SET_PAGE_QUEUE = "SET_PAGE_QUEUE";
+export const SET_PAGE_DATA = "SET_PAGE_DATA";
 export const SET_MUSIC_DATA = "SET_MUSIC_DATA";
-export const SET_PAGE_MUSIC_DATA = "SET_PAGE_MUSIC_DATA";
-export const SET_PAGE_TO_MUSIC_DATA = "SET_PAGE_TO_MUSIC_DATA";
-export const SET_SONG_DURATION = "SET_SONG_DURATION";
-export const SET_MAX_DURATION = "SET_MAX_DURATION";
-export const SET_SONG_PLAYING = "SET_SONG_PLAYING";
-export const SET_SONG_PAUSED = "SET_SONG_PAUSED";
-export const SET_NEW_SONG_PLAYING = "SET_NEW_SONG_PLAYING";
-export const UPDATE_SONG_TIMER = "UPDATE_SONG_TIMER";
+export const SET_AUDIO = "SET_AUDIO";
+export const SET_CURRENTLY_PLAYING = "SET_CURRENTLY_PLAYING";
 
-
-export const GET_TRACK_NAME = "GET_TRACK_NAME";
-export const GET_TRACK_DURATION = "GET_TRACK_DURATION";
-
-export const PLAY_NEXT_SONG = "PLAY_NEXT_SONG";
-export const PLAY_PREVIOUS_SONG = "PLAY_PREVIOUS_SONG";
-export const PAUSE_SONG = "PAUSE_SONG";
+export const PAUSE = "PAUSE";
+export const PLAY = "PLAY";
+export const PLAY_SONG = "PLAY_SONG";
 export const SET_SONG = "SET_SONG";

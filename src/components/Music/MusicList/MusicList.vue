@@ -1,7 +1,6 @@
 <template>
   <div class="music-container">
     <div class="loading-wrapper" v-if="checkLoading">
-        <!-- <div class="loader"></div> -->
       <div class="pulse"></div>
     </div>
     <div class="wrapper" v-else >
@@ -13,11 +12,12 @@
         <h2>{{name}}</h2>
       </div>
       <div class="play-btn">
-        <button class="btn" @click="PLAY_SONG(0)">Play</button>
+        <button class="btn" v-if="checkPlaying && compareList" @click.prevent="PAUSE_CURRENT_SONG">Pause</button>
+        <button class="btn" v-else @click.prevent="PLAY_CURRENT_SONG">Play</button>
       </div>
     </div>
     <ul>
-      <li class="track" v-for="(track, i) in getMusic" :data-index="i" @click="PLAY_SONG(i)" :key="track.id" :class="index === i && queue[index].track_name === track.track_name ? 'active' : null" >
+      <li class="track" v-for="(track) in getMusic" @click="PLAY_SONG(track.id)" :key="track.id" :class="getSong.id === track.id ? 'active' : null">
         <div class="track-title">{{ track.track_name }}</div>
         <div class="track-info">
           <span class="track-artist">{{track.artist_name}}</span>
@@ -46,20 +46,22 @@ export default {
     checkLoading() {
       return this.loading();
     },
-    index() {
-      return this.songIndex();
-    },
-    queue() {
-      return this.songQueue();
-    },
     innerWidth() {
       return window.innerWidth;
+    },
+    getSong() {
+      return this.song();
+    },
+    checkPlaying() {
+      return this.currentlyPlaying();
+    },
+    compareList() {
+      return this.compareMusicList()
     }
-    
   },
   methods: {
-      ...mapActions(['PLAY_SONG']),
-      ...mapGetters(['pageMusicData', 'loading', 'songIndex', 'songQueue']),
+      ...mapActions(['PLAY_SONG', 'PLAY_CURRENT_SONG', 'PAUSE_CURRENT_SONG']),
+      ...mapGetters(['pageMusicData', 'loading', 'song', 'currentlyPlaying', 'compareMusicList']),
       onLoad () {
         this.$refs.playlistImage.style.height = 'auto';
       }

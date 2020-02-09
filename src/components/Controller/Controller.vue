@@ -1,34 +1,34 @@
 <template>
   <div class="jamdown-controller">
     <div class="current-track">
-      <div v-if="Object.keys(song).length > 0" class="current-track-image">
-        <img :src="song.album_image" alt="poster">
+      <div class="current-track-image">
+        <!-- <img :src="song.album_image" alt="poster"> -->
       </div>
-     <div v-if="Object.keys(song).length > 0" class="current-track-text">
-        <div class="current-track-track">{{song.track_name}}</div>
-        <div class="current-track-artist">{{song.artist_name}}</div>
+     <div class="current-track-text">
+        <div class="current-track-track"></div>
+        <div class="current-track-artist"></div>
       </div>
     </div>
     <div class="controller -middle">
       <div class="controller-buttons">
         <button class="-step-btn" @click.prevent="PLAY_PREVIOUS_SONG"><font-awesome-icon icon="fast-backward"/></button>
-        <button v-if="playing" @click.prevent="PAUSE_SONG(getSongIndex)" class="-pause">
+        <button class="-pause" v-if="playing" @click.prevent="PAUSE_CURRENT_SONG">
           <font-awesome-icon icon="pause"/>
         </button>
-        <button v-else @click.prevent="PLAY_SONG_CONTROLLER(getSongIndex)" class="-play"> 
+        <button class="-play" v-else @click.prevent="PLAY_CURRENT_SONG"> 
           <font-awesome-icon icon="play"/>
         </button>
         <button class="-step-btn" @click.prevent="PLAY_NEXT_SONG"><font-awesome-icon icon="fast-forward"/></button>
       </div>
       <div class="controller-progress-bar">
         
-        <span class="controller-progress-bar-start" v-if="getDuration">{{getDuration}}</span>
-        <span class="controller-progress-bar-start" v-else>0:00</span>
+        <span class="controller-progress-bar-start"></span>
+        <span class="controller-progress-bar-start">0:00</span>
         <button class="progress-bar">
-          <div class="progress-bar-line" :style="{width: currentTime + '%', height: '4px', backgroundColor: 'lightpink', position: 'absolute', top: '0', left: '0'}"></div>
+          <div class="progress-bar-line"></div>
         </button>
-        <span class="controller-progress-bar-end" v-if="getMaxDuration">{{getMaxDuration}}</span>
-        <span class="controller-progress-bar-end" v-else>0:00</span>
+        <span class="controller-progress-bar-end"></span>
+        <span class="controller-progress-bar-end">0:00</span>
       </div>
     </div>
   </div>
@@ -38,45 +38,45 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
   computed: {
-    song() {
-      return this.songData();
-    },
+  //   song() {
+  //     return this.songData();
+  //   },
     playing() {
       return this.currentlyPlaying();
     },
-    getSongIndex() {
-      if(this.songIndex() === null) {
-        return "0"
-      } else {
-        return this.songIndex()
-      }
-    },
-    getDuration() {
-      return this.trackDuration();
-    },
-    getMaxDuration() {
-      let convertedTime = Math.floor(this.maxDuration() / 1000);
-      let minutes = Math.floor(convertedTime / 60);
-      let seconds = convertedTime % 60;
-      if(seconds < 10 && seconds >= 1){
-        seconds = "0" + seconds
-      } else if(seconds <= 0) {
-        seconds = "00"
-      }
+  //   getSongIndex() {
+  //     if(this.songIndex() === null) {
+  //       return "0"
+  //     } else {
+  //       return this.songIndex()
+  //     }
+  //   },
+  //   getDuration() {
+  //     return this.trackDuration();
+  //   },
+  //   getMaxDuration() {
+  //     let convertedTime = Math.floor(this.maxDuration() / 1000);
+  //     let minutes = Math.floor(convertedTime / 60);
+  //     let seconds = convertedTime % 60;
+  //     if(seconds < 10 && seconds >= 1){
+  //       seconds = "0" + seconds
+  //     } else if(seconds <= 0) {
+  //       seconds = "00"
+  //     }
 
-      if(minutes <= 0) {
-        minutes = "0";
-      }
+  //     if(minutes <= 0) {
+  //       minutes = "0";
+  //     }
 
-      return minutes + ":" + seconds;
-    },
-    currentTime() {
-      return (this.currentTimestamp() / this.maxDuration()) * 100
-    }
+  //     return minutes + ":" + seconds;
+  //   },
+  //   currentTime() {
+  //     return (this.currentTimestamp() / this.maxDuration()) * 100
+  //   }
   },
   methods: {
-    ...mapActions(["PLAY_SONG_CONTROLLER", "PAUSE_SONG", "PLAY_NEXT_SONG", "PLAY_PREVIOUS_SONG"]),
-    ...mapGetters(["currentlyPlaying", "songIndex", "trackDuration", "maxDuration", "currentTimestamp", 'songData'])
+    ...mapActions(["PLAY_NEXT_SONG", "PLAY_PREVIOUS_SONG", "PLAY_CURRENT_SONG", "PAUSE_CURRENT_SONG"]),
+    ...mapGetters(["currentlyPlaying"])
   }
 }
 </script>
