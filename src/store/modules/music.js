@@ -135,10 +135,18 @@ const actions = {
     })
   },
   PLAY_SONG ({commit}, id) {
-    commit(SET_MUSIC_DATA, state.pageMusicData);
-    const song = state.pageMusicData.filter(song => id === song.id)[0];
-    commit(SET_AUDIO, song);
-    commit(SET_CURRENTLY_PLAYING, true)
+    if(state.song.id === id && state.currentlyPlaying) {
+      commit(PAUSE);
+      commit(SET_CURRENTLY_PLAYING, false)
+    } else if (state.song.id === id && !state.currentlyPlaying) {
+      commit(PLAY);
+      commit(SET_CURRENTLY_PLAYING, true)
+    } else {
+      commit(SET_MUSIC_DATA, state.pageMusicData);
+      const song = state.pageMusicData.filter(song => id === song.id)[0];
+      commit(SET_AUDIO, song);
+      commit(SET_CURRENTLY_PLAYING, true)
+    }
   },
   PLAY_NEXT_SONG ({commit}) {
     const currentSongIndex = state.musicData.findIndex(song => song.id === state.song.id)
